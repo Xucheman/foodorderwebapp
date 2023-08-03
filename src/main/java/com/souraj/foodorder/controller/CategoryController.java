@@ -5,26 +5,22 @@ import com.souraj.foodorder.repository.CategoryRepo;
 import org.primefaces.model.UploadedFile;
 
 import javax.annotation.PostConstruct;
-import javax.faces.view.ViewScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
 import java.io.Serializable;
 import java.util.List;
-import javax.faces.context.FacesContext;
-import org.primefaces.context.PrimeFacesContext;
+import javax.ejb.EJB;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import org.primefaces.event.FileUploadEvent;
 
-@Named(value = "categoryController")
-@ViewScoped
+@ManagedBean
+@SessionScoped
 public class CategoryController implements Serializable {
 
     private Category category;
     private List<Category> categoryList;
     private UploadedFile uploadedFile;
-    @Inject
-    private FileUploadController fileUploadController;
 
-    @Inject
+    @EJB
     private CategoryRepo categoryRepo;
 
     public Category getCategory() {
@@ -54,14 +50,15 @@ public class CategoryController implements Serializable {
     public void listen(FileUploadEvent event) {
         System.out.println("EVENT" + event);
         if (event != null) {
-            uploadedFile = event.getFile();
+            this.uploadedFile = event.getFile();
         }
     }
 
     @PostConstruct
     public void init() {
+        System.out.println("INIT");
         this.category = new Category();
-        loadData();
+//        loadData();
     }
 
     public void beforeCreate() {
@@ -76,20 +73,14 @@ public class CategoryController implements Serializable {
         System.out.println("HELLO HELLO SAVE TRIGGERED");
         System.out.print(" SAVE TRIGGERED");
 
-//        UploadedFile uploadedFiles = fileUploadController.getUploadedFile();
-//        System.out.println("uploadedFiles :"+uploadedFiles);
-//        if (!uploadedFiles.isEmpty()) {
-//            UploadedFile uploadedFile = uploadedFiles.get(0);
-        String filePath = fileUploadController.saveUploadedFile(uploadedFile);
+        String filePath = categoryRepo.saveUploadedFile(uploadedFile);
         category.setFilePath(filePath);
-//        }
 
         if (category.getId() == null) {
 //            categoryRepo.save(category);
         } else {
             categoryRepo.update(category);
         }
-        fileUploadController.getUploadedFiles().clear();
         category = new Category();
     }
 
@@ -97,7 +88,7 @@ public class CategoryController implements Serializable {
         Category categoryToDelete = categoryRepo.findById(id);
         String filePath = categoryToDelete.getFilePath();
         if (filePath != null) {
-            fileUploadController.deleteFile(filePath);
+            categoryRepo.deleteFile(filePath);
         }
         categoryRepo.delete(id);
         loadData();
@@ -108,7 +99,7 @@ public class CategoryController implements Serializable {
     }
 
     public void viewFile(Category category) {
-        fileUploadController.viewFile(category.getFilePath());
+//        fileUploadController.viewFile(category.getFilePath());
     }
 
 }

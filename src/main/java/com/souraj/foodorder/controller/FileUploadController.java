@@ -129,21 +129,15 @@ import org.primefaces.model.UploadedFile;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
-import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
-import javax.inject.Named;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import org.apache.commons.io.FilenameUtils;
-import org.primefaces.event.FileUploadEvent;
-import org.primefaces.model.DefaultUploadedFile;
 
 @ManagedBean(name = "fileUploadController")
 @SessionScoped
@@ -212,21 +206,16 @@ public class FileUploadController implements Serializable {
 //        FacesContext.getCurrentInstance().addMessage(null, msg);
 //    }
     public String saveUploadedFile(UploadedFile uploadedFile) {
-        System.out.println("uploadedFile :"+uploadedFile);
         if (uploadedFile != null) {
             try {
                 String uploadFolderPath = "/home/ksouraj/Uploads";
-                System.out.println("uploadFolderPath2323 :" + uploadFolderPath);
                 Path folderPath = Paths.get(uploadFolderPath);
-                System.out.println("folderPath :"+folderPath);
                 Files.createDirectories(folderPath);
-System.out.println("CREated"+uploadedFile);
 //                String uniqueFileName = UUID.randomUUID().toString() + 
 //                        "." + FilenameUtils.getExtension(uploadedFile.getFileName());
 //                System.out.println("uploadedFile.getFileName() :" + uploadedFile);
 //                Path filePath = folderPath.resolve(uploadedFile.getFileName());
-File outF= new File(uploadFolderPath);
-                System.out.println("uploadedFile.getInputstream()"+uploadedFile.getInputstream());
+                File outF = new File(uploadFolderPath);
                 try (InputStream inputStream = uploadedFile.getInputstream(); OutputStream outputStream = new FileOutputStream(outF)) {
                     byte[] buffer = new byte[1024];
                     int bytesRead;
